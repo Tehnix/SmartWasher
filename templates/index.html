@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Yay!</title>
+  <link rel="stylesheet" href="{{ staticCssPath }}">
+</head>
+<body>
+  <h1>Hey there!</h1>
+
+  {% if testValue %}
+    <p>Test: {{ testValue }}</p>
+  {% else %}
+    <p>Awww :(</p>
+  {% endif %}
+</body>
+</html>
