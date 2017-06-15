@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
 from werkzeug.exceptions import BadRequest
 import logging
+import time
 
 
 app = Flask(__name__)
@@ -45,45 +46,95 @@ class AudioData(db.Model):
         )
 
 
-class PiezoData(db.Model):
+class AudioDataOriginal(db.Model):
     """
     The database object that will hold both the raw and processed audio data.
     """
     id = db.Column(db.Integer, primary_key=True)
-    value = db.Column(db.Integer)
+    audio = db.Column(db.Integer)
     processedValue = db.Column(db.Integer)
+    noiseValue = db.Column(db.Integer)
     building = db.Column(db.String(255))
     floor = db.Column(db.Integer)
     room = db.Column(db.String(255))
     datetime = db.Column(db.DateTime(timezone=True), server_default=func.now())
 
-    def __init__(self, value, building, floor, room):
-        self.value = value
+    def __init__(self, audio, building, floor, room):
+        self.audio = audio
         self.processedValue = None
+        self.noiseValue = None
         self.building = building
         self.floor = floor
         self.room = room
 
     def __repr__(self):
-        return '<AudioData data: {0}, processed: {1}, location: {2}/{3} {4}, date: {5}'.format(
-            self.value,
+        return '<AudioDataOriginal data: {0}, processed: {1}, noise: {6}, location: {2}/{3} {4}, date: {5}'.format(
+            self.audio,
             self.processedValue,
             self.building,
             self.floor,
             self.room,
-            self.datetime
+            self.datetime,
+            self.noiseValue
         )
+
+
+class Building():
+    def __init__(self, name, floors):
+        self.name = name
+        self.floors = floors
+
+
+class Floor():
+    def __init__(self):
+        self.floors = {}
+
+    def addRoom(self, floor, room):
+        if floor not in self.floors:
+            self.floors[floor] = [room]
+        else:
+            self.floors[floor].append(room)
+
+
+class Room():
+    def __init__(self, name):
+        self.name = name
+
+
+room = Room("Washing Room")
+floors = Floor()
+floors.addRoom(1, room)
+w6 = Building("W6", floors)
+
+buildings = {
+    w6.name.lower(): w6
+}
 
 
 @app.route('/')
 def index():
     """Site showing the status of the various washing machines."""
-    staticCssPath = url_for('static', filename='style.css')
-    testValue = "Yes!"
+    avoidCache = str(int(time.time() * 100000))
     return render_template(
         'index.html',
-        staticCssPath=staticCssPath,
-        testValue=testValue
+        avoidCache=avoidCache,
+        buildings=buildings
+    )
+
+
+@app.route('/building/<string:building>')
+def building(building):
+    """Site showing the status of the various washing machines."""
+    avoidCache = str(int(time.time() * 100000))
+    if building.lower() in buildings:
+        building = buildings[building.lower()]
+    else:
+        building = None
+    return render_template(
+        'building.html',
+        avoidCache=avoidCache,
+        buildings=buildings,
+        building=building
     )
 
 
@@ -105,7 +156,6 @@ def ApiDataAudio():
         floor = jsonData['floor']
         room = jsonData['room']
         audioData = jsonData['audioData']
-        piezoData = jsonData['piezoData']
 
         for data in audioData:
             newAudioData = AudioData(
@@ -115,14 +165,6 @@ def ApiDataAudio():
                 room
             )
             db.session.add(newAudioData)
-        for data in piezoData:
-            newPiezoData = PiezoData(
-                data,
-                building,
-                floor,
-                room
-            )
-            db.session.add(newPiezoData)
         db.session.commit()
     except KeyError as error:
         if 'building' not in jsonData:
@@ -133,8 +175,6 @@ def ApiDataAudio():
             missingFields.append('room')
         if 'audioData' not in jsonData:
             missingFields.append('audioData')
-        if 'piezoData' not in jsonData:
-            missingFields.append('piezoData')
         errorMessage = {
             'status': 'error',
             'message': 'missing fields',

@@ -1,16 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Yay!</title>
-  <link rel="stylesheet" href="{{ staticCssPath }}">
+  <title>Find your Building | SmartWasher</title>
+  <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/css/styles.css?{{ avoidCache }}">
+  <script src="/static/js/jquery-3.2.1.min.js"></script>
+  <script src="/static/js/bootstrap.min.js"></script>
 </head>
 <body>
-  <h1>Hey there!</h1>
+  <div id="topBar">
+    <img id="topBarLogo" width="50px" height="50px" src="/static/img/logo.png">
+    SmartWasher
+  </div>
 
-  {% if testValue %}
-    <p>Test: {{ testValue }}</p>
-  {% else %}
-    <p>Awww :(</p>
-  {% endif %}
+  <div id="content">
+    <h1>Find your building!</h1>
+
+    {% for buildingName, building in buildings.items() %}
+      <a class="building" href="/building/{{ building.name }}">{{ building.name }}</a>
+    {% endfor %}
+  </div>
+
 </body>
 </html>
