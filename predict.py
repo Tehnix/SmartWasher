@@ -3,7 +3,7 @@ from sklearn.svm import SVC
 import random
 from sqlalchemy import desc
 
-from main import AudioDataOriginal, AudioData
+from app import AudioDataOriginal, AudioData
 
 groupSize = 200
 
@@ -107,6 +107,21 @@ def test_prediction_against_original():
     print(predictionNotRunning)
 
 
+def predict_current_state_of_room(clf, building, floor, room):
+    """Predict the state of the current sampels."""
+    audioSamples = AudioData.query.filter(
+        AudioData.processedValue.isnot(None),
+        AudioData.building == building,
+        AudioData.floor == floor,
+        AudioData.room == room,
+    ).order_by(desc(AudioData.id)).limit(200).all()
+    samples = []
+    for sample in audioSamples:
+        samples.append(sample.processedValue)
+    samples = np.array(samples).reshape(1, -1)
+    return clf.predict(samples)
+
+
 def predict_current_state(clf):
     """Predict the state of the current sampels."""
     audioSamples = AudioData.query.filter(
@@ -115,4 +130,5 @@ def predict_current_state(clf):
     samples = []
     for sample in audioSamples:
         samples.append(sample.processedValue)
+    samples = np.array(samples).reshape(1, -1)
     return clf.predict(samples)

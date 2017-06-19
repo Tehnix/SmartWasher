@@ -1,6 +1,6 @@
 import random
 
-from main import db, AudioDataOriginal
+from app import db, AudioDataOriginal
 
 
 def process_original_data():

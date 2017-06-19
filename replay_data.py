@@ -1,6 +1,6 @@
 import random
 
-from main import db, AudioDataOriginal, AudioData
+from app import db, AudioDataOriginal, AudioData
 
 
 groupSize = 200
