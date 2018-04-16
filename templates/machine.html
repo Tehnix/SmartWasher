@@ -36,7 +36,9 @@
     y: {{ yJsonData|safe }}
   };
   var layout = {
-      title: 'Audio Sample Data'
+      title: 'Audio Sample Data',
+      xaxis: { title:'Samples' },
+      yaxis: { title:'Amplitude', range: [0, 30]  }
   };
   Plotly.newPlot('data-plot', [jsonData], layout);
 </script>

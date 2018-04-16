@@ -10,7 +10,7 @@ app.logger.addHandler(handler)
 app.config['DEBUG'] = True
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:root@127.0.0.1:8889/smartwasher'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root@127.0.0.1:3306/smartwasher'
 db = SQLAlchemy(app)
 
 

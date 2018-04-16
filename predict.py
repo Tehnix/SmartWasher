@@ -108,7 +108,7 @@ def test_prediction_against_original():
 
 
 def predict_current_state_of_room(clf, building, floor, room):
-    """Predict the state of the current sampels."""
+    """Predict the state of the current samples."""
     audioSamples = AudioData.query.filter(
         AudioData.processedValue.isnot(None),
         AudioData.building == building,
@@ -123,7 +123,7 @@ def predict_current_state_of_room(clf, building, floor, room):
 
 
 def predict_current_state(clf):
-    """Predict the state of the current sampels."""
+    """Predict the state of the current samples."""
     audioSamples = AudioData.query.filter(
         AudioData.processedValue.isnot(None)
     ).order_by(desc(AudioData.id)).limit(200).all()

@@ -14,7 +14,7 @@ def main():
         print("    3: Simulate running state with steps")
         print("    4: Reset steps")
         print("    q: quit")
-        action = input("$ ")
+        action = input(">> ")
         if action == "1":
             print("Adding silent data")
             replay_data.add_silent_values(noiseValues)
@@ -31,3 +31,6 @@ def main():
             break
         else:
             print("Invalid action!")
+
+if __name__ == '__main__':
+    main()
